@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude mcp:*)",
+      "mcp__firecrawl-mcp__firecrawl_search",
+      "mcp__firecrawl-mcp__firecrawl_scrape",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "Read(//Users/agilewing/projects/**)",
+      "Bash(npx create-next-app@latest ImageKit --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --no-turbopack)",
+      "Bash(cd /Users/agilewing/projects && rm -rf imagekit-temp && npx create-next-app@latest imagekit-app --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --no-turbopack --yes 2>&1)",
+      "Bash(cp -r /Users/agilewing/projects/imagekit-app/* /Users/agilewing/projects/ImageKit/ && cp /Users/agilewing/projects/imagekit-app/.* /Users/agilewing/projects/ImageKit/ 2>/dev/null; rm -rf /Users/agilewing/projects/imagekit-app && ls /Users/agilewing/projects/ImageKit/)",
+      "Bash(npm install:*)",
+      "Bash(npx shadcn@latest init -y --defaults 2>&1)"
+    ]
+  }
+}

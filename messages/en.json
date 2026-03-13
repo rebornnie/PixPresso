@@ -1,0 +1,123 @@
+{
+  "metadata": {
+    "title": "PixPresso - Online Image Processing Tool",
+    "description": "Free online image compression, format conversion, resizing and background color replacement. All processing happens in your browser to protect your privacy."
+  },
+  "nav": {
+    "compress": "Compress",
+    "convert": "Convert",
+    "resize": "Resize",
+    "background": "Background",
+    "theme": "Toggle theme"
+  },
+  "home": {
+    "hero": {
+      "title": "Powerful Online Image Tool",
+      "subtitle": "Compress, Convert, Resize, Change Background — All in One",
+      "description": "All processing happens in your browser. Images never leave your device.",
+      "cta": "Get Started"
+    },
+    "features": {
+      "compress": {
+        "title": "Image Compression",
+        "description": "Adjust quality to dramatically reduce file size while maintaining visual quality."
+      },
+      "convert": {
+        "title": "Format Conversion",
+        "description": "Convert freely between JPG, PNG, and WebP formats."
+      },
+      "resize": {
+        "title": "Image Resize",
+        "description": "Custom or preset dimensions with aspect ratio lock support."
+      },
+      "background": {
+        "title": "Background Change",
+        "description": "Replace photo background color instantly — white, red, blue and more."
+      }
+    },
+    "highlights": {
+      "privacy": {
+        "title": "Privacy First",
+        "description": "Images are processed entirely in your browser. Nothing is uploaded."
+      },
+      "free": {
+        "title": "Completely Free",
+        "description": "No registration, no limits. All features are free to use."
+      },
+      "fast": {
+        "title": "Blazing Fast",
+        "description": "Canvas API powered local processing. No network transfer needed."
+      }
+    }
+  },
+  "upload": {
+    "title": "Drop image here, or click to select",
+    "hint": "Supports JPG, PNG, WebP. Max 20MB",
+    "change": "Change Image",
+    "info": {
+      "fileName": "File Name",
+      "fileSize": "File Size",
+      "dimensions": "Dimensions",
+      "format": "Format"
+    }
+  },
+  "compress": {
+    "title": "Image Compression",
+    "description": "Adjust compression quality to reduce file size",
+    "quality": "Quality",
+    "original": "Original",
+    "compressed": "Compressed",
+    "reduction": "Reduced",
+    "download": "Download Compressed Image",
+    "preview": "Preview"
+  },
+  "convert": {
+    "title": "Format Conversion",
+    "description": "Convert between JPG, PNG and WebP freely",
+    "targetFormat": "Target Format",
+    "quality": "Output Quality",
+    "qualityHint": "Only for JPG/WebP",
+    "original": "Original",
+    "converted": "Converted",
+    "download": "Download Converted Image"
+  },
+  "resize": {
+    "title": "Image Resize",
+    "description": "Resize images with presets or custom dimensions",
+    "width": "Width",
+    "height": "Height",
+    "lockAspectRatio": "Lock Aspect Ratio",
+    "presets": "Presets",
+    "custom": "Custom",
+    "preset": {
+      "avatar": "Avatar",
+      "thumbnail": "Thumbnail",
+      "socialCover": "Social Cover",
+      "phoneWallpaper": "Phone Wallpaper",
+      "idPhoto1inch": "1-inch ID Photo",
+      "idPhoto2inch": "2-inch ID Photo"
+    },
+    "original": "Original Size",
+    "resized": "Resized",
+    "download": "Download Resized Image"
+  },
+  "background": {
+    "title": "Background Change",
+    "description": "Replace solid background color in images",
+    "sourceColor": "Source Background Color",
+    "pick": "Click image to pick color",
+    "targetColor": "Target Background Color",
+    "tolerance": "Color Tolerance",
+    "presetColors": "Preset Colors",
+    "white": "White",
+    "red": "Red",
+    "blue": "Blue",
+    "custom": "Custom",
+    "download": "Download Processed Image"
+  },
+  "footer": {
+    "privacy": "Privacy",
+    "privacyText": "All images are processed in your browser and never uploaded to any server.",
+    "copyright": "PixPresso - Open Source Image Processing Tool"
+  }
+}

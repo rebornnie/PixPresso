@@ -11,7 +11,13 @@
       "Bash(cd /Users/agilewing/projects && rm -rf imagekit-temp && npx create-next-app@latest imagekit-app --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --no-turbopack --yes 2>&1)",
       "Bash(cp -r /Users/agilewing/projects/imagekit-app/* /Users/agilewing/projects/ImageKit/ && cp /Users/agilewing/projects/imagekit-app/.* /Users/agilewing/projects/ImageKit/ 2>/dev/null; rm -rf /Users/agilewing/projects/imagekit-app && ls /Users/agilewing/projects/ImageKit/)",
       "Bash(npm install:*)",
-      "Bash(npx shadcn@latest init -y --defaults 2>&1)"
+      "Bash(npx shadcn@latest init -y --defaults 2>&1)",
+      "Bash(npx shadcn@latest add slider card label select switch tabs input badge separator dropdown-menu -y 2>&1)",
+      "Bash(npm run:*)",
+      "Bash(sleep 5 && curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/zh && echo \"\" && curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/zh/compress && echo \"\" && curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/en/convert && echo \"\" && curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/zh/resize && echo \"\" && curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/zh/background)",
+      "Bash(npx next:*)",
+      "Bash(curl -s http://localhost:3000/zh/resize | head -5)"
     ]
   }
 }

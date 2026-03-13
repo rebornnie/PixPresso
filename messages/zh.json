@@ -1,0 +1,123 @@
+{
+  "metadata": {
+    "title": "PixPresso - 在线图片处理工具",
+    "description": "免费在线图片压缩、格式转换、尺寸调整和背景颜色更换工具，所有处理在浏览器端完成，保护您的隐私。"
+  },
+  "nav": {
+    "compress": "压缩",
+    "convert": "转换",
+    "resize": "调整",
+    "background": "背景",
+    "theme": "切换主题"
+  },
+  "home": {
+    "hero": {
+      "title": "强大的在线图片处理工具",
+      "subtitle": "压缩、转换、调整尺寸、更换背景 — 一站搞定",
+      "description": "所有处理在浏览器端完成，图片不上传服务器，保护您的隐私安全。",
+      "cta": "开始使用"
+    },
+    "features": {
+      "compress": {
+        "title": "图片压缩",
+        "description": "调节质量参数，大幅减小文件体积，同时保持视觉质量。"
+      },
+      "convert": {
+        "title": "格式转换",
+        "description": "JPG、PNG、WebP 三种格式任意互转，满足不同场景需求。"
+      },
+      "resize": {
+        "title": "尺寸调整",
+        "description": "自定义或选择预设尺寸，支持锁定宽高比等比缩放。"
+      },
+      "background": {
+        "title": "背景更换",
+        "description": "一键更换证件照背景颜色，支持白底、红底、蓝底等。"
+      }
+    },
+    "highlights": {
+      "privacy": {
+        "title": "隐私安全",
+        "description": "图片完全在浏览器中处理，不上传任何服务器。"
+      },
+      "free": {
+        "title": "完全免费",
+        "description": "无需注册，无使用限制，所有功能免费使用。"
+      },
+      "fast": {
+        "title": "极速处理",
+        "description": "基于 Canvas API 本地处理，无需等待网络传输。"
+      }
+    }
+  },
+  "upload": {
+    "title": "拖拽图片到此处，或点击选择文件",
+    "hint": "支持 JPG、PNG、WebP 格式，最大 20MB",
+    "change": "更换图片",
+    "info": {
+      "fileName": "文件名",
+      "fileSize": "文件大小",
+      "dimensions": "尺寸",
+      "format": "格式"
+    }
+  },
+  "compress": {
+    "title": "图片压缩",
+    "description": "调节压缩质量，减小文件体积",
+    "quality": "压缩质量",
+    "original": "原始大小",
+    "compressed": "压缩后",
+    "reduction": "减少",
+    "download": "下载压缩图片",
+    "preview": "预览"
+  },
+  "convert": {
+    "title": "格式转换",
+    "description": "在 JPG、PNG、WebP 之间自由转换",
+    "targetFormat": "目标格式",
+    "quality": "输出质量",
+    "qualityHint": "仅 JPG/WebP 有效",
+    "original": "原始格式",
+    "converted": "转换后",
+    "download": "下载转换图片"
+  },
+  "resize": {
+    "title": "尺寸调整",
+    "description": "调整图片尺寸，支持预设和自定义",
+    "width": "宽度",
+    "height": "高度",
+    "lockAspectRatio": "锁定宽高比",
+    "presets": "预设尺寸",
+    "custom": "自定义",
+    "preset": {
+      "avatar": "头像",
+      "thumbnail": "缩略图",
+      "socialCover": "社交封面",
+      "phoneWallpaper": "手机壁纸",
+      "idPhoto1inch": "一寸证件照",
+      "idPhoto2inch": "二寸证件照"
+    },
+    "original": "原始尺寸",
+    "resized": "调整后",
+    "download": "下载调整图片"
+  },
+  "background": {
+    "title": "背景更换",
+    "description": "更换图片纯色背景颜色",
+    "sourceColor": "原始背景颜色",
+    "pick": "点击图片吸取颜色",
+    "targetColor": "目标背景颜色",
+    "tolerance": "颜色容差",
+    "presetColors": "预设颜色",
+    "white": "白色",
+    "red": "红色",
+    "blue": "蓝色",
+    "custom": "自定义",
+    "download": "下载处理图片"
+  },
+  "footer": {
+    "privacy": "隐私说明",
+    "privacyText": "所有图片仅在您的浏览器中处理，不会上传到任何服务器。",
+    "copyright": "PixPresso - 开源图片处理工具"
+  }
+}

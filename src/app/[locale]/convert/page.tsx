@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -34,13 +34,16 @@ export default function ConvertPage() {
   const [quality, setQuality] = useState(80);
   const [convertedBlob, setConvertedBlob] = useState<Blob | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const previewUrlRef = useRef<string | null>(null);
 
   const processImage = useCallback(async () => {
     if (!imageInfo) return;
     const blob = await convertImage(imageInfo.url, targetFormat, quality);
     setConvertedBlob(blob);
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setPreviewUrl(URL.createObjectURL(blob));
+    if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+    const url = URL.createObjectURL(blob);
+    previewUrlRef.current = url;
+    setPreviewUrl(url);
   }, [imageInfo, targetFormat, quality]);
 
   useEffect(() => {
@@ -49,9 +52,12 @@ export default function ConvertPage() {
 
   useEffect(() => {
     return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+        previewUrlRef.current = null;
+      }
     };
-  }, [previewUrl]);
+  }, []);
 
   const handleDownload = () => {
     if (!convertedBlob || !imageInfo) return;

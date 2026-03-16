@@ -89,6 +89,11 @@
     "lockAspectRatio": "锁定宽高比",
     "presets": "预设尺寸",
     "custom": "自定义",
+    "modeLabel": "模式",
+    "mode": {
+      "contain": "适应（可能留白）",
+      "cover": "填充（可能裁剪）"
+    },
     "preset": {
       "avatar": "头像",
       "thumbnail": "缩略图",

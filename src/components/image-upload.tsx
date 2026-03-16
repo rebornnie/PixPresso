@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Upload, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,25 @@ export function ImageUpload({ onImageLoad, imageInfo }: ImageUploadProps) {
   const t = useTranslations("upload");
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const prevUrlRef = useRef<string | null>(null);
+
+  // Revoke previous URL when imageInfo changes or component unmounts
+  useEffect(() => {
+    if (imageInfo?.url) {
+      if (prevUrlRef.current && prevUrlRef.current !== imageInfo.url) {
+        URL.revokeObjectURL(prevUrlRef.current);
+      }
+      prevUrlRef.current = imageInfo.url;
+    }
+  }, [imageInfo?.url]);
+
+  useEffect(() => {
+    return () => {
+      if (prevUrlRef.current) {
+        URL.revokeObjectURL(prevUrlRef.current);
+      }
+    };
+  }, []);
 
   const processFile = useCallback(
     (file: File) => {
@@ -42,6 +61,9 @@ export function ImageUpload({ onImageLoad, imageInfo }: ImageUploadProps) {
           height: img.naturalHeight,
           format: getImageFormat(file),
         });
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
       };
       img.src = url;
     },

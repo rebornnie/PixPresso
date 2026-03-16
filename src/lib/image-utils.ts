@@ -69,12 +69,15 @@ export async function convertImage(
   return compressImage(imageSrc, targetFormat, quality);
 }
 
+export type ResizeMode = "contain" | "cover";
+
 export async function resizeImage(
   imageSrc: string,
   targetWidth: number,
   targetHeight: number,
   format: ImageFormat,
-  quality: number
+  quality: number,
+  mode: ResizeMode = "contain"
 ): Promise<Blob> {
   const img = await loadImage(imageSrc);
   const canvas = document.createElement("canvas");
@@ -82,23 +85,37 @@ export async function resizeImage(
   canvas.height = targetHeight;
   const ctx = canvas.getContext("2d")!;
 
-  // Contain mode: fit entire image within target, preserving aspect ratio
-  const scale = Math.min(
-    targetWidth / img.naturalWidth,
-    targetHeight / img.naturalHeight
-  );
-  const scaledW = img.naturalWidth * scale;
-  const scaledH = img.naturalHeight * scale;
-  const offsetX = (targetWidth - scaledW) / 2;
-  const offsetY = (targetHeight - scaledH) / 2;
-
   // Fill background white for JPG (no transparency)
   if (format === "image/jpeg") {
     ctx.fillStyle = "#FFFFFF";
     ctx.fillRect(0, 0, targetWidth, targetHeight);
   }
 
-  ctx.drawImage(img, offsetX, offsetY, scaledW, scaledH);
+  if (mode === "contain") {
+    // Contain mode: fit entire image within target, preserving aspect ratio (may have padding)
+    const scale = Math.min(
+      targetWidth / img.naturalWidth,
+      targetHeight / img.naturalHeight
+    );
+    const scaledW = img.naturalWidth * scale;
+    const scaledH = img.naturalHeight * scale;
+    const offsetX = (targetWidth - scaledW) / 2;
+    const offsetY = (targetHeight - scaledH) / 2;
+
+    ctx.drawImage(img, offsetX, offsetY, scaledW, scaledH);
+  } else {
+    // Cover mode: fill entire target area, cropping overflow (no padding)
+    const scale = Math.max(
+      targetWidth / img.naturalWidth,
+      targetHeight / img.naturalHeight
+    );
+    const scaledW = img.naturalWidth * scale;
+    const scaledH = img.naturalHeight * scale;
+    const offsetX = (targetWidth - scaledW) / 2;
+    const offsetY = (targetHeight - scaledH) / 2;
+
+    ctx.drawImage(img, offsetX, offsetY, scaledW, scaledH);
+  }
 
   return new Promise((resolve, reject) => {
     canvas.toBlob(
@@ -130,7 +147,7 @@ export async function replaceBackgroundColor(
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   const data = imageData.data;
 
-  const tolSq = tolerance * tolerance;
+  const tolSq = tolerance * tolerance * 3; // Multiply by 3 for RGB distance (3 channels)
 
   for (let i = 0; i < data.length; i += 4) {
     const dr = data[i] - sourceColor.r;
@@ -138,7 +155,7 @@ export async function replaceBackgroundColor(
     const db = data[i + 2] - sourceColor.b;
     const distSq = dr * dr + dg * dg + db * db;
 
-    if (distSq <= tolSq * 3) {
+    if (distSq <= tolSq) {
       data[i] = targetColor.r;
       data[i + 1] = targetColor.g;
       data[i + 2] = targetColor.b;

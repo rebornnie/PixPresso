@@ -14,15 +14,16 @@ import {
   formatFileSize,
   downloadBlob,
   FORMAT_EXTENSIONS,
+  type ResizeMode,
 } from "@/lib/image-utils";
 
 const PRESETS = [
-  { key: "avatar", w: 128, h: 128 },
-  { key: "thumbnail", w: 256, h: 256 },
-  { key: "socialCover", w: 1200, h: 630 },
-  { key: "phoneWallpaper", w: 1080, h: 1920 },
-  { key: "idPhoto1inch", w: 295, h: 413 },
-  { key: "idPhoto2inch", w: 413, h: 579 },
+  { key: "avatar", w: 128, h: 128, mode: "cover" as ResizeMode },
+  { key: "thumbnail", w: 256, h: 256, mode: "cover" as ResizeMode },
+  { key: "socialCover", w: 1200, h: 630, mode: "contain" as ResizeMode },
+  { key: "phoneWallpaper", w: 1080, h: 1920, mode: "contain" as ResizeMode },
+  { key: "idPhoto1inch", w: 295, h: 413, mode: "cover" as ResizeMode },
+  { key: "idPhoto2inch", w: 413, h: 579, mode: "cover" as ResizeMode },
 ] as const;
 
 export default function ResizePage() {
@@ -35,6 +36,7 @@ export default function ResizePage() {
   const [resizedBlob, setResizedBlob] = useState<Blob | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [resizeMode, setResizeMode] = useState<ResizeMode>("contain");
   const previewUrlRef = useRef<string | null>(null);
 
   const handleImageLoad = useCallback((info: ImageInfo) => {
@@ -58,10 +60,11 @@ export default function ResizePage() {
     }
   };
 
-  const applyPreset = (w: number, h: number) => {
+  const applyPreset = (w: number, h: number, mode: ResizeMode) => {
     setLockRatio(false);
     setWidth(w);
     setHeight(h);
+    setResizeMode(mode);
   };
 
   const processImage = useCallback(async () => {
@@ -73,7 +76,8 @@ export default function ResizePage() {
         Math.round(width),
         Math.round(height),
         imageInfo.format,
-        90
+        90,
+        resizeMode
       );
       setResizedBlob(blob);
       if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
@@ -83,14 +87,14 @@ export default function ResizePage() {
     } finally {
       setProcessing(false);
     }
-  }, [imageInfo, width, height]);
+  }, [imageInfo, width, height, resizeMode]);
 
   useEffect(() => {
     if (imageInfo && width > 0 && height > 0) {
       const timer = setTimeout(processImage, 300);
       return () => clearTimeout(timer);
     }
-  }, [imageInfo, width, height, processImage]);
+  }, [imageInfo, width, height, resizeMode, processImage]);
 
   useEffect(() => {
     return () => {
@@ -135,7 +139,7 @@ export default function ResizePage() {
                         variant={width === p.w && height === p.h ? "default" : "outline"}
                         size="sm"
                         className="text-xs"
-                        onClick={() => applyPreset(p.w, p.h)}
+                        onClick={() => applyPreset(p.w, p.h, p.mode)}
                       >
                         {t(`preset.${p.key}`)}
                         <br />
@@ -204,6 +208,10 @@ export default function ResizePage() {
                     <Download className="h-4 w-4 mr-2" />
                     {processing ? t("title") + "..." : t("download")}
                   </Button>
+
+                  <div className="text-xs text-muted-foreground text-center">
+                    {t("modeLabel")}: {t(`mode.${resizeMode}`)}
+                  </div>
                 </CardContent>
               </Card>
             )}

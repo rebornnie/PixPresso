@@ -89,6 +89,11 @@
     "lockAspectRatio": "Lock Aspect Ratio",
     "presets": "Presets",
     "custom": "Custom",
+    "modeLabel": "Mode",
+    "mode": {
+      "contain": "Fit (may have padding)",
+      "cover": "Fill (may crop)"
+    },
     "preset": {
       "avatar": "Avatar",
       "thumbnail": "Thumbnail",

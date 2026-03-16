@@ -44,6 +44,7 @@ export default function BackgroundPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [picking, setPicking] = useState(false);
   const previewImgRef = useRef<HTMLImageElement>(null);
+  const previewUrlRef = useRef<string | null>(null);
 
   const processImage = useCallback(async () => {
     if (!imageInfo) return;
@@ -56,8 +57,10 @@ export default function BackgroundPage() {
       90
     );
     setResultBlob(blob);
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setPreviewUrl(URL.createObjectURL(blob));
+    if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+    const url = URL.createObjectURL(blob);
+    previewUrlRef.current = url;
+    setPreviewUrl(url);
   }, [imageInfo, sourceColor, targetColor, tolerance]);
 
   useEffect(() => {
@@ -69,9 +72,12 @@ export default function BackgroundPage() {
 
   useEffect(() => {
     return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+        previewUrlRef.current = null;
+      }
     };
-  }, [previewUrl]);
+  }, []);
 
   const handlePickColor = async (e: React.MouseEvent<HTMLImageElement>) => {
     if (!picking || !imageInfo || !previewImgRef.current) return;

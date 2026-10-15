@@ -9,8 +9,11 @@ import {
   Shield,
   Zap,
   Heart,
+  FileImage,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button-variants";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardHeader,
@@ -55,8 +58,12 @@ function HomeContent({ locale }: { locale: string }) {
   return (
     <div className="flex flex-col">
       {/* Hero */}
-      <section className="py-20 md:py-32">
+      <section className="relative overflow-hidden py-20 md:py-28">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
+        <div className="absolute -top-24 -left-24 -z-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute -top-16 right-0 -z-10 h-64 w-64 rounded-full bg-success/10 blur-3xl" />
         <div className="container mx-auto px-4 text-center">
+          <Badge variant="secondary" className="mb-6">{t("hero.badge")}</Badge>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
             {t("hero.title")}
           </h1>
@@ -66,16 +73,44 @@ function HomeContent({ locale }: { locale: string }) {
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
             {t("hero.description")}
           </p>
-          <Link href={`/${locale}/compress`}>
-            <Button size="lg" className="text-lg px-8">
+          <div className="flex items-center justify-center gap-3">
+            <Link
+              href={`/${locale}/compress`}
+              className={cn(buttonVariants({ size: "lg" }), "text-lg px-8 hover:bg-primary/80")}
+            >
               {t("hero.cta")}
-            </Button>
-          </Link>
+            </Link>
+            <a
+              href="#features"
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "text-lg px-8")}
+            >
+              {t("hero.ctaSecondary")}
+            </a>
+          </div>
+
+          {/* Compression demo mock */}
+          <div className="mx-auto mt-14 max-w-md rounded-xl border bg-card p-4 text-left shadow-lg">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                <FileImage className="h-5 w-5 text-primary" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium">photo.jpg</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("hero.demoOriginal")} 2.4 MB · {t("hero.demoCompressed")} 386 KB
+                </p>
+              </div>
+              <Badge className="bg-success text-success-foreground">-84%</Badge>
+            </div>
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+              <div className="h-full w-[16%] rounded-full bg-success" />
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Features */}
-      <section className="py-16 bg-muted/30">
+      <section id="features" className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {(
@@ -84,7 +119,7 @@ function HomeContent({ locale }: { locale: string }) {
               const Icon = featureIcons[key];
               return (
                 <Link key={key} href={`/${locale}${featureLinks[key]}`}>
-                  <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
+                  <Card className="h-full cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
                     <CardHeader>
                       <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
                         <Icon className="h-6 w-6 text-primary" />

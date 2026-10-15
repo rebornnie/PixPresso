@@ -15,7 +15,11 @@
       "title": "Powerful Online Image Tool",
       "subtitle": "Compress, Convert, Resize, Change Background — All in One",
       "description": "All processing happens in your browser. Images never leave your device.",
-      "cta": "Get Started"
+      "badge": "100% In-Browser Processing",
+      "cta": "Get Started",
+      "ctaSecondary": "Explore Features",
+      "demoOriginal": "Original",
+      "demoCompressed": "Compressed"
     },
     "features": {
       "compress": {
@@ -50,10 +54,20 @@
       }
     }
   },
+  "common": {
+    "processing": "Processing…",
+    "downloaded": "Download Started"
+  },
   "upload": {
+    "previewEmpty": "Upload an image and the result will appear here",
     "title": "Drop image here, or click to select",
     "hint": "Supports JPG, PNG, WebP. Max 20MB",
     "change": "Change Image",
+    "error": {
+      "tooLarge": "Images must be 20 MB or smaller.",
+      "unsupported": "Only JPG, PNG, and WebP images are supported.",
+      "invalid": "This image could not be opened. Choose another file."
+    },
     "info": {
       "fileName": "File Name",
       "fileSize": "File Size",
@@ -69,7 +83,13 @@
     "compressed": "Compressed",
     "reduction": "Reduced",
     "download": "Download Compressed Image",
-    "preview": "Preview"
+    "preview": "Preview",
+    "error": "Image processing failed. Try another image.",
+    "modeQuality": "By Quality",
+    "modeSize": "By Size",
+    "targetSize": "Target Size",
+    "invalidTarget": "Enter a valid target size.",
+    "targetUnmet": "Compressed to {size}, still above the target. Try a larger target or smaller dimensions."
   },
   "convert": {
     "title": "Format Conversion",
@@ -79,7 +99,8 @@
     "qualityHint": "Only for JPG/WebP",
     "original": "Original",
     "converted": "Converted",
-    "download": "Download Converted Image"
+    "download": "Download Converted Image",
+    "error": "Image processing failed. Try another image."
   },
   "resize": {
     "title": "Image Resize",
@@ -104,7 +125,9 @@
     },
     "original": "Original Size",
     "resized": "Resized",
-    "download": "Download Resized Image"
+    "download": "Download Resized Image",
+    "invalidSize": "Width and height must be whole pixels between 1 and 10000.",
+    "error": "Image processing failed. Try another image."
   },
   "background": {
     "title": "Background Change",
@@ -118,7 +141,8 @@
     "red": "Red",
     "blue": "Blue",
     "custom": "Custom",
-    "download": "Download Processed Image"
+    "download": "Download Processed Image",
+    "error": "Image processing failed. Try another image."
   },
   "footer": {
     "privacy": "Privacy",

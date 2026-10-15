@@ -6,6 +6,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { Sun, Moon, Globe, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button-variants";
+import { cn } from "@/lib/utils";
 
 const navItems = [
   { key: "compress", href: "/compress" },
@@ -19,7 +21,7 @@ export function Header() {
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
   const switchLocale = () => {
     const newLocale = locale === "zh" ? "en" : "zh";
@@ -33,7 +35,7 @@ export function Header() {
   };
 
   const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
   };
 
   return (
@@ -43,33 +45,39 @@ export function Header() {
           href={`/${locale}`}
           className="mr-6 flex items-center gap-2 font-bold"
         >
-          <ImageIcon className="h-5 w-5" />
+          <ImageIcon className="h-5 w-5 text-primary" />
           <span>PixPresso</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1 flex-1">
           {navItems.map((item) => (
-            <Link key={item.key} href={`/${locale}${item.href}`}>
-              <Button
-                variant={isActive(item.href) ? "secondary" : "ghost"}
-                size="sm"
-              >
-                {t(item.key)}
-              </Button>
+            <Link
+              key={item.key}
+              href={`/${locale}${item.href}`}
+              className={buttonVariants({
+                variant: isActive(item.href) ? "secondary" : "ghost",
+                size: "sm",
+              })}
+            >
+              {t(item.key)}
             </Link>
           ))}
         </nav>
 
         <nav className="flex md:hidden items-center gap-1 flex-1 overflow-x-auto">
           {navItems.map((item) => (
-            <Link key={item.key} href={`/${locale}${item.href}`}>
-              <Button
-                variant={isActive(item.href) ? "secondary" : "ghost"}
-                size="sm"
-                className="text-xs px-2"
-              >
-                {t(item.key)}
-              </Button>
+            <Link
+              key={item.key}
+              href={`/${locale}${item.href}`}
+              className={cn(
+                buttonVariants({
+                  variant: isActive(item.href) ? "secondary" : "ghost",
+                  size: "sm",
+                }),
+                "text-xs px-2"
+              )}
+            >
+              {t(item.key)}
             </Link>
           ))}
         </nav>

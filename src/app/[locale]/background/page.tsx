@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Download, Pipette } from "lucide-react";
+import { Pipette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ImageUpload, type ImageInfo } from "@/components/image-upload";
+import { DownloadButton } from "@/components/download-button";
+import { PreviewEmptyState } from "@/components/preview-empty-state";
 import {
   replaceBackgroundColor,
   pickColorFromImage,
@@ -42,31 +44,52 @@ export default function BackgroundPage() {
   const [tolerance, setTolerance] = useState(30);
   const [resultBlob, setResultBlob] = useState<Blob | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [processedKey, setProcessedKey] = useState("");
+  const [errorKey, setErrorKey] = useState("");
   const [picking, setPicking] = useState(false);
   const previewImgRef = useRef<HTMLImageElement>(null);
   const previewUrlRef = useRef<string | null>(null);
+  const requestKey = imageInfo
+    ? `${imageInfo.url}|${sourceColor.r},${sourceColor.g},${sourceColor.b}|${targetColor.r},${targetColor.g},${targetColor.b}|${tolerance}`
+    : "";
+  const currentBlob = processedKey === requestKey ? resultBlob : null;
+  // Keep showing the last processed frame while a new one is pending;
+  // only hide it when it belongs to a different image.
+  const currentPreview =
+    imageInfo && previewUrl && processedKey.startsWith(`${imageInfo.url}|`)
+      ? previewUrl
+      : null;
+  const processing = !!imageInfo && processedKey !== requestKey && errorKey !== requestKey;
 
-  const processImage = useCallback(async () => {
+  const processImage = useCallback(async (isCurrent: () => boolean) => {
     if (!imageInfo) return;
-    const blob = await replaceBackgroundColor(
-      imageInfo.url,
-      sourceColor,
-      targetColor,
-      tolerance,
-      imageInfo.format,
-      90
-    );
-    setResultBlob(blob);
-    if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
-    const url = URL.createObjectURL(blob);
-    previewUrlRef.current = url;
-    setPreviewUrl(url);
-  }, [imageInfo, sourceColor, targetColor, tolerance]);
+    try {
+      const blob = await replaceBackgroundColor(
+        imageInfo.url,
+        sourceColor,
+        targetColor,
+        tolerance,
+        imageInfo.format,
+        90
+      );
+      if (!isCurrent()) return;
+      setResultBlob(blob);
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+      const url = URL.createObjectURL(blob);
+      previewUrlRef.current = url;
+      setPreviewUrl(url);
+      setProcessedKey(requestKey);
+      setErrorKey("");
+    } catch {
+      if (isCurrent()) setErrorKey(requestKey);
+    }
+  }, [imageInfo, sourceColor, targetColor, tolerance, requestKey]);
 
   useEffect(() => {
     if (imageInfo) {
-      const timer = setTimeout(processImage, 200);
-      return () => clearTimeout(timer);
+      let active = true;
+      const timer = setTimeout(() => { void processImage(() => active); }, 200);
+      return () => { active = false; clearTimeout(timer); };
     }
   }, [imageInfo, sourceColor, targetColor, tolerance, processImage]);
 
@@ -85,7 +108,7 @@ export default function BackgroundPage() {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const color = await pickColorFromImage(
-      imageInfo.url,
+      currentPreview || imageInfo.url,
       x,
       y,
       rect.width,
@@ -96,10 +119,10 @@ export default function BackgroundPage() {
   };
 
   const handleDownload = () => {
-    if (!resultBlob || !imageInfo) return;
+    if (!currentBlob || !imageInfo) return;
     const ext = FORMAT_EXTENSIONS[imageInfo.format];
     const baseName = imageInfo.file.name.replace(/\.[^.]+$/, "");
-    downloadBlob(resultBlob, `${baseName}_bg_changed.${ext}`);
+    downloadBlob(currentBlob, `${baseName}_bg_changed.${ext}`);
   };
 
   return (
@@ -190,17 +213,20 @@ export default function BackgroundPage() {
                     />
                   </div>
 
-                  <Button onClick={handleDownload} disabled={!resultBlob} className="w-full">
-                    <Download className="h-4 w-4 mr-2" />
-                    {t("download")}
-                  </Button>
+                  <DownloadButton
+                    onDownload={handleDownload}
+                    disabled={!currentBlob}
+                    processing={processing}
+                    label={t("download")}
+                  />
+                  {errorKey === requestKey && <p role="alert" className="text-sm text-destructive">{t("error")}</p>}
                 </CardContent>
               </Card>
             )}
           </div>
 
           <div className="lg:col-span-2 space-y-4">
-            {imageInfo && (
+            {imageInfo ? (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
@@ -216,7 +242,7 @@ export default function BackgroundPage() {
                   <div className="rounded-lg overflow-hidden border bg-muted/20">
                     <img
                       ref={previewImgRef}
-                      src={previewUrl || imageInfo.url}
+                      src={currentPreview || imageInfo.url}
                       alt="Background preview"
                       className={`w-full object-contain max-h-[500px] ${
                         picking ? "cursor-crosshair" : ""
@@ -226,7 +252,7 @@ export default function BackgroundPage() {
                   </div>
                 </CardContent>
               </Card>
-            )}
+            ) : (<PreviewEmptyState />)}
           </div>
         </div>
       </div>

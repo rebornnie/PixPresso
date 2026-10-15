@@ -28,7 +28,9 @@ export function ImageUpload({ onImageLoad, imageInfo }: ImageUploadProps) {
   const t = useTranslations("upload");
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const prevUrlRef = useRef<string | null>(null);
+  const requestIdRef = useRef(0);
 
   // Revoke previous URL when imageInfo changes or component unmounts
   useEffect(() => {
@@ -42,6 +44,7 @@ export function ImageUpload({ onImageLoad, imageInfo }: ImageUploadProps) {
 
   useEffect(() => {
     return () => {
+      requestIdRef.current += 1;
       if (prevUrlRef.current) {
         URL.revokeObjectURL(prevUrlRef.current);
       }
@@ -50,24 +53,39 @@ export function ImageUpload({ onImageLoad, imageInfo }: ImageUploadProps) {
 
   const processFile = useCallback(
     (file: File) => {
-      if (file.size > 20 * 1024 * 1024) return;
+      const requestId = ++requestIdRef.current;
+      setError(null);
+      if (file.size > 20 * 1024 * 1024) {
+        setError(t("error.tooLarge"));
+        return;
+      }
+      const format = getImageFormat(file);
+      if (!format) {
+        setError(t("error.unsupported"));
+        return;
+      }
       const url = URL.createObjectURL(file);
       const img = new Image();
       img.onload = () => {
+        if (requestId !== requestIdRef.current) {
+          URL.revokeObjectURL(url);
+          return;
+        }
         onImageLoad({
           file,
           url,
           width: img.naturalWidth,
           height: img.naturalHeight,
-          format: getImageFormat(file),
+          format,
         });
       };
       img.onerror = () => {
         URL.revokeObjectURL(url);
+        if (requestId === requestIdRef.current) setError(t("error.invalid"));
       };
       img.src = url;
     },
-    [onImageLoad]
+    [onImageLoad, t]
   );
 
   const handleDrop = useCallback(
@@ -75,9 +93,7 @@ export function ImageUpload({ onImageLoad, imageInfo }: ImageUploadProps) {
       e.preventDefault();
       setIsDragging(false);
       const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith("image/")) {
-        processFile(file);
-      }
+      if (file) processFile(file);
     },
     [processFile]
   );
@@ -86,6 +102,8 @@ export function ImageUpload({ onImageLoad, imageInfo }: ImageUploadProps) {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) processFile(file);
+      // Reset so selecting the same file again re-triggers onChange
+      e.target.value = "";
     },
     [processFile]
   );
@@ -136,6 +154,7 @@ export function ImageUpload({ onImageLoad, imageInfo }: ImageUploadProps) {
         >
           {t("change")}
         </Button>
+        {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
         <input
           ref={inputRef}
           type="file"
@@ -149,6 +168,8 @@ export function ImageUpload({ onImageLoad, imageInfo }: ImageUploadProps) {
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       onDragOver={(e) => {
         e.preventDefault();
         setIsDragging(true);
@@ -156,7 +177,13 @@ export function ImageUpload({ onImageLoad, imageInfo }: ImageUploadProps) {
       onDragLeave={() => setIsDragging(false)}
       onDrop={handleDrop}
       onClick={() => inputRef.current?.click()}
-      className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors ${
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          inputRef.current?.click();
+        }
+      }}
+      className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
         isDragging
           ? "border-primary bg-primary/5"
           : "border-muted-foreground/25 hover:border-primary/50"
@@ -170,6 +197,7 @@ export function ImageUpload({ onImageLoad, imageInfo }: ImageUploadProps) {
         )}
         <p className="text-sm font-medium">{t("title")}</p>
         <p className="text-xs text-muted-foreground">{t("hint")}</p>
+        {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
       </div>
       <input
         ref={inputRef}

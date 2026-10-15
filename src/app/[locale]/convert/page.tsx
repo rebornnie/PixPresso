@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +14,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ImageUpload, type ImageInfo } from "@/components/image-upload";
+import { DownloadButton } from "@/components/download-button";
+import { PreviewEmptyState } from "@/components/preview-empty-state";
 import {
   convertImage,
   formatFileSize,
@@ -34,20 +34,48 @@ export default function ConvertPage() {
   const [quality, setQuality] = useState(80);
   const [convertedBlob, setConvertedBlob] = useState<Blob | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [processedKey, setProcessedKey] = useState("");
+  const [errorKey, setErrorKey] = useState("");
   const previewUrlRef = useRef<string | null>(null);
+  const requestKey = imageInfo ? `${imageInfo.url}|${targetFormat}|${quality}` : "";
+  const currentBlob = processedKey === requestKey ? convertedBlob : null;
+  // Stats keep showing the last result for the current image while a new
+  // one is pending, so the layout below the controls doesn't shift.
+  const statsBlob =
+    imageInfo && convertedBlob && processedKey.startsWith(`${imageInfo.url}|`)
+      ? convertedBlob
+      : null;
+  // Keep showing the last processed frame while a new one is pending;
+  // only hide it when it belongs to a different image.
+  const currentPreview =
+    imageInfo && previewUrl && processedKey.startsWith(`${imageInfo.url}|`)
+      ? previewUrl
+      : null;
+  const processing = !!imageInfo && processedKey !== requestKey && errorKey !== requestKey;
 
-  const processImage = useCallback(async () => {
+  const processImage = useCallback(async (isCurrent: () => boolean) => {
     if (!imageInfo) return;
-    const blob = await convertImage(imageInfo.url, targetFormat, quality);
-    setConvertedBlob(blob);
-    if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
-    const url = URL.createObjectURL(blob);
-    previewUrlRef.current = url;
-    setPreviewUrl(url);
-  }, [imageInfo, targetFormat, quality]);
+    try {
+      const blob = await convertImage(imageInfo.url, targetFormat, quality);
+      if (!isCurrent()) return;
+      setConvertedBlob(blob);
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+      const url = URL.createObjectURL(blob);
+      previewUrlRef.current = url;
+      setPreviewUrl(url);
+      setProcessedKey(requestKey);
+      setErrorKey("");
+    } catch {
+      if (isCurrent()) setErrorKey(requestKey);
+    }
+  }, [imageInfo, targetFormat, quality, requestKey]);
 
   useEffect(() => {
-    if (imageInfo) processImage();
+    if (imageInfo) {
+      let active = true;
+      const timer = setTimeout(() => { void processImage(() => active); }, 200);
+      return () => { active = false; clearTimeout(timer); };
+    }
   }, [imageInfo, targetFormat, quality, processImage]);
 
   useEffect(() => {
@@ -60,10 +88,10 @@ export default function ConvertPage() {
   }, []);
 
   const handleDownload = () => {
-    if (!convertedBlob || !imageInfo) return;
+    if (!currentBlob || !imageInfo) return;
     const ext = FORMAT_EXTENSIONS[targetFormat];
     const baseName = imageInfo.file.name.replace(/\.[^.]+$/, "");
-    downloadBlob(convertedBlob, `${baseName}_converted.${ext}`);
+    downloadBlob(currentBlob, `${baseName}_converted.${ext}`);
   };
 
   const showQuality = targetFormat !== "image/png";
@@ -121,7 +149,7 @@ export default function ConvertPage() {
                     </div>
                   )}
 
-                  {convertedBlob && (
+                  {statsBlob && (
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">{t("original")}:</span>
@@ -132,23 +160,26 @@ export default function ConvertPage() {
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">{t("converted")}:</span>
                         <span className="font-medium">
-                          {FORMAT_LABELS[targetFormat]} · {formatFileSize(convertedBlob.size)}
+                          {FORMAT_LABELS[targetFormat]} · {formatFileSize(statsBlob.size)}
                         </span>
                       </div>
                     </div>
                   )}
 
-                  <Button onClick={handleDownload} disabled={!convertedBlob} className="w-full">
-                    <Download className="h-4 w-4 mr-2" />
-                    {t("download")}
-                  </Button>
+                  <DownloadButton
+                    onDownload={handleDownload}
+                    disabled={!currentBlob}
+                    processing={processing}
+                    label={t("download")}
+                  />
+                  {errorKey === requestKey && <p role="alert" className="text-sm text-destructive">{t("error")}</p>}
                 </CardContent>
               </Card>
             )}
           </div>
 
           <div className="lg:col-span-2">
-            {previewUrl && (
+            {currentPreview ? (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
@@ -158,14 +189,14 @@ export default function ConvertPage() {
                 <CardContent>
                   <div className="rounded-lg overflow-hidden border bg-muted/20">
                     <img
-                      src={previewUrl}
+                      src={currentPreview}
                       alt="Converted preview"
                       className="w-full object-contain max-h-[500px]"
                     />
                   </div>
                 </CardContent>
               </Card>
-            )}
+            ) : (<PreviewEmptyState />)}
           </div>
         </div>
       </div>

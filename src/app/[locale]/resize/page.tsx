@@ -2,15 +2,18 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Download, Lock, Unlock } from "lucide-react";
+import { Lock, Unlock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ImageUpload, type ImageInfo } from "@/components/image-upload";
+import { DownloadButton } from "@/components/download-button";
+import { PreviewEmptyState } from "@/components/preview-empty-state";
 import {
   resizeImage,
+  isValidImageSize,
   formatFileSize,
   downloadBlob,
   FORMAT_EXTENSIONS,
@@ -35,9 +38,26 @@ export default function ResizePage() {
   const [aspectRatio, setAspectRatio] = useState(1);
   const [resizedBlob, setResizedBlob] = useState<Blob | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [processing, setProcessing] = useState(false);
+  const [processedKey, setProcessedKey] = useState("");
+  const [errorKey, setErrorKey] = useState("");
   const [resizeMode, setResizeMode] = useState<ResizeMode>("contain");
   const previewUrlRef = useRef<string | null>(null);
+  const requestKey = imageInfo ? `${imageInfo.url}|${width}|${height}|${resizeMode}` : "";
+  const validSize = isValidImageSize(width, height);
+  const currentBlob = processedKey === requestKey ? resizedBlob : null;
+  // Stats keep showing the last result for the current image while a new
+  // one is pending, so the layout below the controls doesn't shift.
+  const statsBlob =
+    imageInfo && resizedBlob && processedKey.startsWith(`${imageInfo.url}|`)
+      ? resizedBlob
+      : null;
+  // Keep showing the last processed frame while a new one is pending;
+  // only hide it when it belongs to a different image.
+  const currentPreview =
+    imageInfo && previewUrl && processedKey.startsWith(`${imageInfo.url}|`)
+      ? previewUrl
+      : null;
+  const processing = !!imageInfo && validSize && processedKey !== requestKey && errorKey !== requestKey;
 
   const handleImageLoad = useCallback((info: ImageInfo) => {
     setImageInfo(info);
@@ -67,9 +87,8 @@ export default function ResizePage() {
     setResizeMode(mode);
   };
 
-  const processImage = useCallback(async () => {
-    if (!imageInfo || width <= 0 || height <= 0) return;
-    setProcessing(true);
+  const processImage = useCallback(async (isCurrent: () => boolean) => {
+    if (!imageInfo || !validSize) return;
     try {
       const blob = await resizeImage(
         imageInfo.url,
@@ -79,22 +98,26 @@ export default function ResizePage() {
         90,
         resizeMode
       );
+      if (!isCurrent()) return;
       setResizedBlob(blob);
       if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
       const url = URL.createObjectURL(blob);
       previewUrlRef.current = url;
       setPreviewUrl(url);
-    } finally {
-      setProcessing(false);
+      setProcessedKey(requestKey);
+      setErrorKey("");
+    } catch {
+      if (isCurrent()) setErrorKey(requestKey);
     }
-  }, [imageInfo, width, height, resizeMode]);
+  }, [imageInfo, width, height, resizeMode, validSize, requestKey]);
 
   useEffect(() => {
-    if (imageInfo && width > 0 && height > 0) {
-      const timer = setTimeout(processImage, 300);
-      return () => clearTimeout(timer);
+    if (imageInfo && validSize) {
+      let active = true;
+      const timer = setTimeout(() => { void processImage(() => active); }, 300);
+      return () => { active = false; clearTimeout(timer); };
     }
-  }, [imageInfo, width, height, resizeMode, processImage]);
+  }, [imageInfo, validSize, processImage]);
 
   useEffect(() => {
     return () => {
@@ -106,10 +129,10 @@ export default function ResizePage() {
   }, []);
 
   const handleDownload = () => {
-    if (!resizedBlob || !imageInfo) return;
+    if (!currentBlob || !imageInfo) return;
     const ext = FORMAT_EXTENSIONS[imageInfo.format];
     const baseName = imageInfo.file.name.replace(/\.[^.]+$/, "");
-    downloadBlob(resizedBlob, `${baseName}_${width}x${height}.${ext}`);
+    downloadBlob(currentBlob, `${baseName}_${width}x${height}.${ext}`);
   };
 
   return (
@@ -187,7 +210,8 @@ export default function ResizePage() {
                     </div>
                   </div>
 
-                  {resizedBlob && (
+                  {!validSize && <p role="alert" className="text-sm text-destructive">{t("invalidSize")}</p>}
+                  {statsBlob && (
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">{t("original")}:</span>
@@ -198,16 +222,19 @@ export default function ResizePage() {
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">{t("resized")}:</span>
                         <span className="font-medium">
-                          {width} x {height} · {formatFileSize(resizedBlob.size)}
+                          {width} x {height} · {formatFileSize(statsBlob.size)}
                         </span>
                       </div>
                     </div>
                   )}
 
-                  <Button onClick={handleDownload} disabled={!resizedBlob || processing} className="w-full">
-                    <Download className="h-4 w-4 mr-2" />
-                    {processing ? t("title") + "..." : t("download")}
-                  </Button>
+                  <DownloadButton
+                    onDownload={handleDownload}
+                    disabled={!currentBlob}
+                    processing={processing}
+                    label={t("download")}
+                  />
+                  {errorKey === requestKey && <p role="alert" className="text-sm text-destructive">{t("error")}</p>}
 
                   <div className="text-xs text-muted-foreground text-center">
                     {t("modeLabel")}: {t(`mode.${resizeMode}`)}
@@ -218,7 +245,7 @@ export default function ResizePage() {
           </div>
 
           <div className="lg:col-span-2">
-            {previewUrl && (
+            {currentPreview ? (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
@@ -233,14 +260,14 @@ export default function ResizePage() {
                 <CardContent>
                   <div className="rounded-lg overflow-hidden border bg-muted/20">
                     <img
-                      src={previewUrl}
+                      src={currentPreview}
                       alt="Resized preview"
                       className="w-full object-contain max-h-[500px]"
                     />
                   </div>
                 </CardContent>
               </Card>
-            )}
+            ) : (<PreviewEmptyState />)}
           </div>
         </div>
       </div>

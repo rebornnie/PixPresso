@@ -15,7 +15,11 @@
       "title": "强大的在线图片处理工具",
       "subtitle": "压缩、转换、调整尺寸、更换背景 — 一站搞定",
       "description": "所有处理在浏览器端完成，图片不上传服务器，保护您的隐私安全。",
-      "cta": "开始使用"
+      "badge": "100% 浏览器本地处理",
+      "cta": "开始使用",
+      "ctaSecondary": "查看功能",
+      "demoOriginal": "原始",
+      "demoCompressed": "压缩后"
     },
     "features": {
       "compress": {
@@ -50,10 +54,20 @@
       }
     }
   },
+  "common": {
+    "processing": "处理中…",
+    "downloaded": "已开始下载"
+  },
   "upload": {
+    "previewEmpty": "上传图片后，处理结果将显示在这里",
     "title": "拖拽图片到此处，或点击选择文件",
     "hint": "支持 JPG、PNG、WebP 格式，最大 20MB",
     "change": "更换图片",
+    "error": {
+      "tooLarge": "图片不能超过 20 MB。",
+      "unsupported": "仅支持 JPG、PNG 和 WebP 图片。",
+      "invalid": "无法读取这张图片，请选择其他文件。"
+    },
     "info": {
       "fileName": "文件名",
       "fileSize": "文件大小",
@@ -69,7 +83,13 @@
     "compressed": "压缩后",
     "reduction": "减少",
     "download": "下载压缩图片",
-    "preview": "预览"
+    "preview": "预览",
+    "error": "图片处理失败，请换一张图片重试。",
+    "modeQuality": "按质量",
+    "modeSize": "按大小",
+    "targetSize": "目标大小",
+    "invalidTarget": "请输入有效的目标大小。",
+    "targetUnmet": "已压缩到 {size}，仍高于目标大小，可适当调大目标或减小图片尺寸。"
   },
   "convert": {
     "title": "格式转换",
@@ -79,7 +99,8 @@
     "qualityHint": "仅 JPG/WebP 有效",
     "original": "原始格式",
     "converted": "转换后",
-    "download": "下载转换图片"
+    "download": "下载转换图片",
+    "error": "图片处理失败，请换一张图片重试。"
   },
   "resize": {
     "title": "尺寸调整",
@@ -104,7 +125,9 @@
     },
     "original": "原始尺寸",
     "resized": "调整后",
-    "download": "下载调整图片"
+    "download": "下载调整图片",
+    "invalidSize": "宽高需为 1 至 10000 的整数像素。",
+    "error": "图片处理失败，请换一张图片重试。"
   },
   "background": {
     "title": "背景更换",
@@ -118,7 +141,8 @@
     "red": "红色",
     "blue": "蓝色",
     "custom": "自定义",
-    "download": "下载处理图片"
+    "download": "下载处理图片",
+    "error": "图片处理失败，请换一张图片重试。"
   },
   "footer": {
     "privacy": "隐私说明",

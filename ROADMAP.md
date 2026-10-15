@@ -24,6 +24,7 @@
 
 ## 最近验证
 
+- 2026-10-15 17:35 浏览器实机回归（用户本机手动验证）通过：四个工具页功能、按大小压缩模式、拖杆/输入时预览与布局稳定性、三期视觉效果（品牌色、首页 Hero、下载反馈、空状态）均正常。
 - 2026-10-15 17:29 验证视觉三期：`npx tsc --noEmit` 通过；`npm run lint` 0 error、5 个既有 `<img>` warning；`npm test` 8 项通过；`npm run build` 生产构建成功，13 个静态页面生成；开发服务 `/zh/compress`、`/zh/convert`、`/zh/resize`、`/zh/background` 均返回 HTTP 200。浏览器视觉效果待实机确认。
 - 2026-10-15 17:19 验证视觉二期：`npx tsc --noEmit` 通过；`npm run lint` 0 error、5 个既有 `<img>` warning；`npm test` 8 项通过；`npm run build` 生产构建成功，13 个静态页面生成；开发服务 `/zh`、`/en` 均返回 HTTP 200，首页含 `#features` 锚点。浏览器视觉效果待实机确认。
 - 2026-10-15 17:05 验证视觉一期：`npx tsc --noEmit` 通过；`npm run lint` 0 error、5 个既有 `<img>` warning；`npm test` 8 项通过；`npm run build` 生产构建成功；构建产物 CSS 含全部品牌色（`#1E3A5F`/`#2563EB`/`#047857`/`#10B981`）；开发服务 `/zh` 与 `/icon.svg` 均返回 HTTP 200，首页 HTML 已引用新图标。浏览器视觉效果待实机确认。
@@ -39,4 +40,4 @@
 ## 待确认 / 后续建议
 
 - `src/components/ui/` 下 `tabs`、`switch`、`separator`、`dropdown-menu` 四个组件无任何引用，属 shadcn 生成残留，可按需清理（本次未删除）。
-- 浏览器交互回归待确认：当前环境的内置浏览器不可用，本次仅完成回归测试、静态检查和构建验证。
+- README.md 仍是 create-next-app 模板，与项目真实状态不符，建议安排重写（项目简介、功能列表、开发命令）。

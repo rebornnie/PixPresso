@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
-import { Sun, Moon, Globe, ImageIcon } from "lucide-react";
+import { Sun, Moon, Globe, ImageIcon, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
@@ -83,6 +83,20 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-1">
+          <a
+            href="https://github.com/rebornnie/PixPresso"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t("github")}
+            title={t("github")}
+            className={cn(
+              buttonVariants({ variant: "ghost", size: "icon" }),
+              "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <Github aria-hidden="true" />
+          </a>
+
           <Button
             variant="ghost"
             size="sm"

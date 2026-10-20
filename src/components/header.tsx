@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
-import { Sun, Moon, Globe, ImageIcon, Github } from "lucide-react";
+import { Sun, Moon, ImageIcon, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
@@ -100,10 +100,9 @@ export function Header() {
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 gap-1 px-2"
+            className="h-8 px-2"
             onClick={switchLocale}
           >
-            <Globe className="h-4 w-4" />
             <span className="text-xs font-medium">
               {locale === "zh" ? "En" : "中"}
             </span>

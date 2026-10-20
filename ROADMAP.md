@@ -6,6 +6,8 @@
 
 ## 最近完成
 
+- 2026-10-20 16:45 标签页 `src/app/icon.svg` 改为与页眉左上角 `ImageIcon` 相同的图片图标；重新构建并重启本地生产预览，使语言按钮移除球形图标的改动实际生效。
+- 2026-10-20 16:27 页眉右上角语言切换移除球形图标，仅保留原有语言文字；切换逻辑和按钮位置保持不变。
 - 2026-10-20 15:27 页眉右上角、语言切换按钮左侧新增 GitHub 仓库图标入口，链接至 `https://github.com/rebornnie/PixPresso` 并在新标签页打开；补充中英文无障碍标签与悬停提示。
 - 2026-10-15 17:29 视觉三期：工具页体验细节。新增共享组件 `src/components/download-button.tsx`（绿色 CTA，处理中 spinner、点击后 2 秒对勾成功反馈，四页统一接入）和 `src/components/preview-empty-state.tsx`（预览空状态引导，四页右列接入）；四页统一 `processing` 派生（结果 pending 即视为处理中），resize 页移除冗余的 `processingKey` 状态；新增 `common` i18n 命名空间。上传 dropzone 的虚线框和拖拽高亮此前已存在，无需改动。
 - 2026-10-15 17:19 视觉二期：首页视觉升级。Hero 加渐变背景与品牌色光斑装饰、顶部 Badge、主次双 CTA（开始使用 / 查看功能锚点）和压缩效果演示卡片（2.4 MB → 386 KB、-84% 体积条）；功能卡片 hover 改为上浮加阴影的 200ms 微交互；页脚此前已存在（隐私说明 + 版权），无需新增。
@@ -25,6 +27,8 @@
 
 ## 最近验证
 
+- 2026-10-20 16:45 验证本地生产预览：`npm run build` 成功生成 13 个静态页面；重启 `next start` 后读取 `/zh` 的实际 HTML，语言按钮仅含 `En` 文字；读取 `/icon.svg`，图形由页眉 `ImageIcon` 对应的 `rect`、`circle`、`path` 构成；`git diff --check` 通过。
+- 2026-10-20 16:27 验证语言切换图标移除：`npx tsc --noEmit`、`npx eslint src/components/header.tsx`、`git diff --check` 均通过。
 - 2026-10-20 15:27 验证 GitHub 页眉入口位置：`npx tsc --noEmit` 通过；`npm run lint` 0 error、5 个既有 `<img>` warning；`npm run build` 成功生成 13 个静态页面；重启本地生产服务后读取 `/zh`，确认 GitHub 链接位于语言切换和主题按钮之前。
 - 2026-10-15 17:35 浏览器实机回归（用户本机手动验证）通过：四个工具页功能、按大小压缩模式、拖杆/输入时预览与布局稳定性、三期视觉效果（品牌色、首页 Hero、下载反馈、空状态）均正常。
 - 2026-10-15 17:29 验证视觉三期：`npx tsc --noEmit` 通过；`npm run lint` 0 error、5 个既有 `<img>` warning；`npm test` 8 项通过；`npm run build` 生产构建成功，13 个静态页面生成；开发服务 `/zh/compress`、`/zh/convert`、`/zh/resize`、`/zh/background` 均返回 HTTP 200。浏览器视觉效果待实机确认。
